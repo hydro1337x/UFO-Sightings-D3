@@ -11,19 +11,11 @@
 
 <body>
     <script>
-        const groupBy = key => array =>
-            array.reduce((objectsByKeyValue, obj) => {
-                const value = obj[key];
-                objectsByKeyValue[value] = (objectsByKeyValue[value] || []).concat(obj);
-                return objectsByKeyValue;
-            }, {});
-
-            const groupByYear = groupBy('datetime')
-            
-        let groupedByYear = groupByYear(dataset)
-        for (index in groupedByYear['2000']) {
-            console.log(groupedByYear['2000'][index]['latitude'])
+        
+        for (year in dataset) {
+            console.log(year)
         }
+
     </script>
 </body>
 

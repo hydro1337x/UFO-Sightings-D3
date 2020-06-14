@@ -23,7 +23,7 @@
         #slider {
             position: fixed;
             left: 50%;
-            bottom: 5px;
+            bottom: 0;
             transform: translate(-50%, -50%);
             margin: 0 auto;
         }
@@ -52,7 +52,7 @@
         let lastYearIndex = -1
 
         let sliderWidth = 960
-        let sliderHeight = 60
+        let sliderHeight = 120
         let sliderHeadRadius = 20
         let margin = 100
         let realSliderWidth = 960 - 100 - 100
@@ -94,43 +94,56 @@
 
         let circle = sliderSvg.append("circle")
             .attr("r", sliderHeadRadius)
-            .attr("cy", function (d) { return d.y; })
-            .attr("cx", function (d) { return d.x; })
+            .attr("cy", function (d) { return d.y })
+            .attr("cx", function (d) { return d.x })
             .style("fill", "red")
             .style("stroke", "#1d1d22")
             .call(drag)
 
+        var yearLabel = sliderSvg.append("rect")
+            .attr("x", sliderWidth / 2 - 75)
+            .attr("y", 90)
+            .attr("width", 100)
+            .attr("height", 30)
+
+        let yearText = sliderSvg.append('text')
+            .text("1906.")
+            .attr("y", 112)
+            .attr("x", sliderWidth / 2 - 50)
+            .attr("font-size", 20)
+            .attr("fill", "white")
+
         function drawMarker(yearIndex) {
             d3.json("dataset.json", (error, data) => {
-                    let d = data[`${Object.keys(dataset)[yearIndex]}`]
-                    g.selectAll("circle")
-                        .data(d)
-                        .enter()
-                        .append("circle")
-                        .style("fill", "red")
-                        .attr("cx", function (d) {
-                            return projection([d.longitude, d.latitude])[0]
-                        })
-                        .attr("cy", function (d) {
-                            return projection([d.longitude, d.latitude])[1]
-                        })
-                        .attr("r", radius)
-                        .on("mouseover", function (d) {
-                            d3.select(this).style("fill", "blue")
-                            tooltip
-                                .style("display", "block")
-                                .style("left", d3.event.pageX + "px")
-                                .style("top", d3.event.pageY - 100 + "px")
-                                .text(d.city)
-                        })
-                        .on("mouseout", function (d) {
-                            tooltip.style("display", "none");
-                            d3.select(this)
-                                .transition()
-                                .style("fill", "red")
-                                .duration(1000)
-                        });
-                });
+                let d = data[`${Object.keys(dataset)[yearIndex]}`]
+                g.selectAll("circle")
+                    .data(d)
+                    .enter()
+                    .append("circle")
+                    .style("fill", "red")
+                    .attr("cx", function (d) {
+                        return projection([d.longitude, d.latitude])[0]
+                    })
+                    .attr("cy", function (d) {
+                        return projection([d.longitude, d.latitude])[1]
+                    })
+                    .attr("r", radius)
+                    .on("mouseover", function (d) {
+                        d3.select(this).style("fill", "blue")
+                        tooltip
+                            .style("display", "block")
+                            .style("left", d3.event.pageX + "px")
+                            .style("top", d3.event.pageY - 100 + "px")
+                            .text(d.city)
+                    })
+                    .on("mouseout", function (d) {
+                        tooltip.style("display", "none");
+                        d3.select(this)
+                            .transition()
+                            .style("fill", "red")
+                            .duration(1000)
+                    })
+            })
         }
 
         function dragmove(d) {
@@ -144,6 +157,7 @@
             if (yearIndex != lastYearIndex) {
                 lastYearIndex = yearIndex
                 d3.select('g').selectAll('circle').remove()
+                d3.select('text').text(`${Object.keys(dataset)[yearIndex]}.`)
                 drawMarker(yearIndex)
             }
 
